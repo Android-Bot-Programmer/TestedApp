@@ -16,8 +16,8 @@ import ru.vaa.testedapp.data.TabItem
 @Composable
 fun MainScreen() {
     val tabs = listOf(
-        TabItem.Cameras("Cameras"),
-        TabItem.Doors("Doors")
+        TabItem.Cameras(title = stringResource(R.string.cameras)),
+        TabItem.Doors(title = stringResource(R.string.doors))
     )
     Box(
         modifier = Modifier
