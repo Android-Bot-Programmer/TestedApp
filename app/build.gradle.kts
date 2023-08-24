@@ -71,6 +71,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.0-alpha04")
 
     // Mongo Realm
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
