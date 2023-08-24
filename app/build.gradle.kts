@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("io.realm.kotlin")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -41,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.4.5"
     }
     packaging {
         resources {
@@ -74,4 +75,12 @@ dependencies {
     // Mongo Realm
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("io.realm.kotlin:library-base:1.10.2")
+
+    // Ktor
+    implementation("io.ktor:ktor-client-core:2.3.3")
+    implementation("io.ktor:ktor-client-android:2.3.3")
+    implementation("io.ktor:ktor-client-serialization:2.3.3")
+    implementation("io.ktor:ktor-client-logging:2.3.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
 }

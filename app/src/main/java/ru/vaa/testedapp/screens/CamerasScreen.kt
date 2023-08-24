@@ -6,9 +6,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.vaa.testedapp.data.cameras.CamerasViewModel
 
 @Composable
-fun CamerasScreen() {
+fun CamerasScreen(camerasViewModel: CamerasViewModel = viewModel()) {
+    camerasViewModel.getCameras()
     Box(
         modifier = Modifier
             .fillMaxSize(),
