@@ -13,4 +13,5 @@ interface MongoRepository {
     suspend fun updateCameraName(value: Camera)
     suspend fun updateDoorName(value: Door)
     suspend fun deleteDoor(id: ObjectId)
+    suspend fun clearAll()
 }

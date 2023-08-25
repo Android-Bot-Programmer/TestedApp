@@ -9,9 +9,10 @@ import kotlinx.coroutines.flow.map
 import org.mongodb.kbson.ObjectId
 import ru.vaa.testedapp.repository.model.Camera
 import ru.vaa.testedapp.repository.model.Door
-import java.lang.Exception
 
 class MongoRepositoryImpl(val realm: Realm) : MongoRepository {
+    private val tag = MongoRepositoryImpl::class.java.simpleName
+
     override fun getCameras(): Flow<List<Camera>> {
         return realm.query<Camera>().asFlow().map { it.list }
     }
@@ -44,7 +45,17 @@ class MongoRepositoryImpl(val realm: Realm) : MongoRepository {
             try {
                 door?.let { delete(it) }
             } catch (e: Exception) {
-                Log.d("MongoRepositoryImpl", "${e.message}")
+                Log.d(tag, "${e.message}")
+            }
+        }
+    }
+
+    override suspend fun clearAll() {
+        return realm.write {
+            try {
+                deleteAll()
+            } catch (e: Exception) {
+                Log.d(tag, "${e.message}")
             }
         }
     }

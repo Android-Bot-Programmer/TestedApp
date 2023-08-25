@@ -29,6 +29,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import ru.vaa.testedapp.data.TabItem
 import ru.vaa.testedapp.repository.model.Camera
+import ru.vaa.testedapp.repository.model.Door
 import ru.vaa.testedapp.ui.theme.Primary
 
 @Composable
@@ -105,6 +106,32 @@ fun NormalTextComponent(value: String) {
 
 @Composable
 fun CameraCardComponent(item: Camera) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp, top = 5.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        colors = CardDefaults.cardColors(Color.White),
+        elevation = CardDefaults.cardElevation(10.dp)
+    ) {
+        AsyncImage(
+            model = item.snapshot,
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(3.dp)
+        )
+        Text(
+            text = item.name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, top = 8.dp, bottom = 20.dp)
+        )
+    }
+}
+
+@Composable
+fun DoorCardComponent(item: Door) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

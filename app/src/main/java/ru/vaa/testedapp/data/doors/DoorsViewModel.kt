@@ -1,5 +1,7 @@
 package ru.vaa.testedapp.data.doors
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,9 +17,11 @@ import javax.inject.Inject
 class DoorsViewModel @Inject constructor(
     private val repository: MongoRepository
 ) : ViewModel() {
-    private val apiService by lazy {
-        ApiService.create()
-    }
+
+    private val tag = DoorsViewModel::class.java.simpleName
+    var loadProgress = mutableStateOf(false)
+
+    private val apiService by lazy { ApiService.create() }
     private val _listDoors = MutableLiveData<List<Door>>()
     val listDoors: LiveData<List<Door>>
         get() = _listDoors
@@ -34,14 +38,27 @@ class DoorsViewModel @Inject constructor(
     }
 
     private suspend fun getDoors() {
-        val data = apiService.getDoors()?.data
-        data?.forEach {
-            repository.insert(Door().apply {
-                name = it.name
-                snapshot = it.snapshot
-                favorites = it.favorites
-                room = it.room
-            })
+        loadProgress.value = true
+        val response = apiService.getDoors()
+
+        if (response?.success == true) {
+            response.data.forEach {
+                repository.insert(Door().apply {
+                    name = it.name
+                    snapshot = it.snapshot
+                    favorites = it.favorites
+                    room = it.room
+                })
+            }
+            loadProgress.value = false
+        } else {
+            loadProgress.value = false
+            Log.d(tag, "Error response")
         }
+    }
+
+    suspend fun clearAll() {
+        repository.clearAll()
+        _listDoors.value = null
     }
 }

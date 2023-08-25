@@ -28,7 +28,7 @@ import ru.vaa.testedapp.repository.model.Camera
 fun CamerasScreen(camerasViewModel: CamerasViewModel = hiltViewModel()) {
     val listCam = camerasViewModel.listCameras.observeAsState()
     val refreshScope = rememberCoroutineScope()
-    fun refresh() = refreshScope.launch { camerasViewModel.getCameras() }
+    fun refresh() = refreshScope.launch { camerasViewModel.clearAll() }
     val state = rememberPullRefreshState(camerasViewModel.loadProgress.value, ::refresh)
 
     Box(

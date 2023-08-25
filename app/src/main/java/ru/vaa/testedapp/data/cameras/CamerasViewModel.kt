@@ -38,7 +38,7 @@ class CamerasViewModel @Inject constructor(
     }
 
 
-    suspend fun getCameras() {
+    private suspend fun getCameras() {
         loadProgress.value = true
         val response = apiService.getCameras()
         if (response?.success == true) {
@@ -56,5 +56,10 @@ class CamerasViewModel @Inject constructor(
             loadProgress.value = false
             Log.d(tag, "Error response")
         }
+    }
+
+    suspend fun clearAll() {
+        _listCameras.value = null
+        repository.clearAll()
     }
 }
