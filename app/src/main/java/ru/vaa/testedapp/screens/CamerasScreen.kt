@@ -1,10 +1,9 @@
 package ru.vaa.testedapp.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -32,25 +31,24 @@ fun CamerasScreen(camerasViewModel: CamerasViewModel = hiltViewModel()) {
     fun refresh() = refreshScope.launch { camerasViewModel.getCameras() }
     val state = rememberPullRefreshState(camerasViewModel.loadProgress.value, ::refresh)
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        NormalTextComponent(value = stringResource(R.string.lounge))
-
-        Box(modifier = Modifier.pullRefresh(state)) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                listCam.value?.let {
-                    items(it) { item: Camera ->
-                        CameraCardComponent(item = item)
-                    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(state)
+    ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            listCam.value?.let {
+                itemsIndexed(it) { index, item: Camera ->
+                    if (index == 0) NormalTextComponent(value = stringResource(R.string.lounge))
+                    CameraCardComponent(item = item)
                 }
             }
-
-            PullRefreshIndicator(
-                camerasViewModel.loadProgress.value,
-                state,
-                Modifier.align(Alignment.TopCenter)
-            )
         }
+        PullRefreshIndicator(
+            camerasViewModel.loadProgress.value,
+            state,
+            Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 
