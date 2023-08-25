@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("io.realm.kotlin")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -90,4 +92,9 @@ dependencies {
     implementation("io.realm.kotlin:library-base:1.10.2")
     implementation("io.realm.kotlin:library-sync:1.10.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    // Dagger Hilt
+    implementation("com.google.dagger:hilt-android:2.47")
+    kapt("com.google.dagger:hilt-compiler:2.44.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 }

@@ -1,14 +1,16 @@
 package ru.vaa.testedapp.repository
 
+import io.realm.kotlin.types.RealmObject
 import kotlinx.coroutines.flow.Flow
 import org.mongodb.kbson.ObjectId
-import ru.vaa.testedapp.data.cameras.CamerasModel
-import ru.vaa.testedapp.data.doors.DoorsModel
+import ru.vaa.testedapp.repository.model.Camera
+import ru.vaa.testedapp.repository.model.Door
 
 interface MongoRepository {
-    fun getCameras(): Flow<List<CamerasModel>>
-    fun getDoors(): Flow<List<DoorsModel>>
-    suspend fun <T> insert(value: T)
-    suspend fun <T> update(value: T)
-    suspend fun delete(id: ObjectId)
+    fun getCameras(): Flow<List<Camera>>
+    fun getDoors(): Flow<List<Door>>
+    suspend fun insert(value: RealmObject)
+    suspend fun updateCameraName(value: Camera)
+    suspend fun updateDoorName(value: Door)
+    suspend fun deleteDoor(id: ObjectId)
 }

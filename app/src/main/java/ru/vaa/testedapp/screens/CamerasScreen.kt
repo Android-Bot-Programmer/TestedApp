@@ -19,14 +19,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import ru.vaa.testedapp.data.cameras.CamerasModel
 import ru.vaa.testedapp.data.cameras.CamerasViewModel
+import ru.vaa.testedapp.repository.model.Camera
 
 @Composable
-fun CamerasScreen(camerasViewModel: CamerasViewModel = viewModel()) {
-    camerasViewModel.getCameras()
+fun CamerasScreen(camerasViewModel: CamerasViewModel = hiltViewModel()) {
     val listCam = camerasViewModel.listCameras.observeAsState()
     Column(
         modifier = Modifier
@@ -46,7 +45,7 @@ fun CamerasScreen(camerasViewModel: CamerasViewModel = viewModel()) {
                 .fillMaxSize()
         ) {
             listCam.value?.let {
-                items(it) { item: CamerasModel ->
+                items(it) { item: Camera ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
