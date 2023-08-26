@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import ru.vaa.testedapp.data.remote.ApiService
 import ru.vaa.testedapp.repository.MongoRepository
@@ -40,8 +41,8 @@ class DoorsViewModel @Inject constructor(
     }
 
     private fun getDoors() {
+        loadProgress.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            loadProgress.value = true
             val response = apiService.getDoors()
 
             if (response?.success == true) {
@@ -53,9 +54,9 @@ class DoorsViewModel @Inject constructor(
                         room = it.room
                     })
                 }
-                loadProgress.value = false
+                withContext(Dispatchers.Main) { loadProgress.value = false }
             } else {
-                loadProgress.value = false
+                withContext(Dispatchers.Main) { loadProgress.value = false }
                 Log.d(tag, "Error response")
             }
         }

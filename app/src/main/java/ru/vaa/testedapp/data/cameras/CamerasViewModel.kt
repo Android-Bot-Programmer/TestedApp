@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.vaa.testedapp.data.remote.ApiService
 import ru.vaa.testedapp.repository.MongoRepository
 import ru.vaa.testedapp.repository.model.Camera
@@ -40,8 +41,8 @@ class CamerasViewModel @Inject constructor(
 
 
     private fun getCameras() {
+        loadProgress.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            loadProgress.value = true
             val response = apiService.getCameras()
             if (response?.success == true) {
                 response.data.cameras.forEach {
@@ -53,9 +54,9 @@ class CamerasViewModel @Inject constructor(
                         rec = it.rec
                     })
                 }
-                loadProgress.value = false
+                withContext(Dispatchers.Main) { loadProgress.value = false }
             } else {
-                loadProgress.value = false
+                withContext(Dispatchers.Main) { loadProgress.value = false }
                 Log.d(tag, "Error response")
             }
         }
@@ -63,8 +64,8 @@ class CamerasViewModel @Inject constructor(
 
     fun clearAll() {
         viewModelScope.launch(Dispatchers.IO) {
-            _listCameras.value = null
             repository.clearAll()
         }
+        _listCameras.value = null
     }
 }
