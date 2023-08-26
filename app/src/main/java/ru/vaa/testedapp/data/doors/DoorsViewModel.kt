@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 import ru.vaa.testedapp.data.remote.ApiService
 import ru.vaa.testedapp.repository.MongoRepository
 import ru.vaa.testedapp.repository.model.Door
@@ -37,28 +39,43 @@ class DoorsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getDoors() {
-        loadProgress.value = true
-        val response = apiService.getDoors()
+    private fun getDoors() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loadProgress.value = true
+            val response = apiService.getDoors()
 
-        if (response?.success == true) {
-            response.data.forEach {
-                repository.insert(Door().apply {
-                    name = it.name
-                    snapshot = it.snapshot
-                    favorites = it.favorites
-                    room = it.room
-                })
+            if (response?.success == true) {
+                response.data.forEach {
+                    repository.insert(Door().apply {
+                        name = it.name
+                        snapshot = it.snapshot
+                        favorites = it.favorites
+                        room = it.room
+                    })
+                }
+                loadProgress.value = false
+            } else {
+                loadProgress.value = false
+                Log.d(tag, "Error response")
             }
-            loadProgress.value = false
-        } else {
-            loadProgress.value = false
-            Log.d(tag, "Error response")
         }
     }
 
-    suspend fun clearAll() {
-        repository.clearAll()
+    fun updateDoorName(objectId: ObjectId, value: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (objectId.toString().isNotEmpty()) {
+                repository.updateDoorName(value = Door().apply {
+                    _id = ObjectId(hexString = objectId.toHexString())
+                    name = value
+                })
+            }
+        }
+    }
+
+    fun clearAll() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.clearAll()
+        }
         _listDoors.value = null
     }
 }
