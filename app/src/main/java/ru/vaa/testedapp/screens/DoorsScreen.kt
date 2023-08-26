@@ -36,8 +36,8 @@ fun DoorsScreen(doorsViewModel: DoorsViewModel = hiltViewModel()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             listDoors.value?.let {
                 items(it) {item: Door ->
-                    DoorCardComponent(item = item) {
-                        /** Edit click **/
+                    DoorCardComponent(item = item) { name ->
+                        doorsViewModel.updateDoorName(item._id, name)
                     }
                 }
             }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.IconButton
@@ -25,9 +26,15 @@ import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -156,12 +164,22 @@ fun CameraCardComponent(item: Camera) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DoorCardComponent(item: Door, editClick: () -> Unit) {
+fun DoorCardComponent(item: Door, editClick: (String) -> Unit) {
     val squareSize = (-100).dp
 
     val swipeState = rememberSwipeableState(0)
     val sizePx = with(LocalDensity.current) { squareSize.toPx() }
     val anchors = mapOf(0f to 0, sizePx to 1)
+
+    val dialogState = remember { mutableStateOf(false) }
+    if (dialogState.value) {
+        AlertDialogComponent(
+            state = dialogState,
+            dialogTitle = stringResource(R.string.rename),
+            onConfirmation = {
+                editClick(it)
+            })
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,7 +195,7 @@ fun DoorCardComponent(item: Door, editClick: () -> Unit) {
                 .align(Alignment.CenterEnd)
                 .padding(end = 10.dp)
         ) {
-            IconButtonComponent(image = Icons.Filled.Edit, tint = Primary) { editClick() }
+            IconButtonComponent(image = Icons.Filled.Edit, tint = Primary) { dialogState.value = true }
             IconButtonComponent(image = Icons.Filled.Star, tint = Color.Yellow) { /* todo */ }
         }
         Card(
@@ -229,4 +247,47 @@ fun IconButtonComponent(image: ImageVector, tint: Color, onClick: () -> Unit) {
                 .padding(5.dp)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDialogComponent(
+    dialogTitle: String,
+    onConfirmation: (String) -> Unit,
+    state: MutableState<Boolean>
+) {
+    val text = remember { mutableStateOf("") }
+    AlertDialog(
+        title = { Text(text = dialogTitle) },
+        text = {
+            TextField(
+                value = text.value,
+                onValueChange = { text.value = it },
+                singleLine = true,
+                maxLines = 1
+            )
+        },
+        onDismissRequest = { state.value = false },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (text.value.isNotEmpty()) {
+                        onConfirmation(text.value)
+                    }
+                    state.value = false
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    state.value = false
+                }
+            ) {
+                Text(stringResource(R.string.dismiss))
+            }
+        }
+    )
 }
