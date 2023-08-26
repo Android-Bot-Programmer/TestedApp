@@ -1,30 +1,46 @@
 package ru.vaa.testedapp.components
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.IconButton
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -38,6 +54,7 @@ import ru.vaa.testedapp.data.TabItem
 import ru.vaa.testedapp.repository.model.Camera
 import ru.vaa.testedapp.repository.model.Door
 import ru.vaa.testedapp.ui.theme.Primary
+import kotlin.math.roundToInt
 
 @Composable
 fun HeadingTextComponent(value: String) {
@@ -137,35 +154,79 @@ fun CameraCardComponent(item: Camera) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DoorCardComponent(item: Door) {
-    Card(
+fun DoorCardComponent(item: Door, editClick: () -> Unit) {
+    val squareSize = (-100).dp
+
+    val swipeState = rememberSwipeableState(0)
+    val sizePx = with(LocalDensity.current) { squareSize.toPx() }
+    val anchors = mapOf(0f to 0, sizePx to 1)
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp, top = 5.dp)
-            .clip(RoundedCornerShape(10.dp)),
-        colors = CardDefaults.cardColors(Color.White),
-        elevation = CardDefaults.cardElevation(10.dp)
+            .swipeable(
+                state = swipeState,
+                anchors = anchors,
+                thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                orientation = Orientation.Horizontal
+            )
     ) {
-        AsyncImage(
-            model = item.snapshot,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(3.dp)
-        )
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .align(Alignment.CenterEnd)
+                .padding(end = 10.dp)
         ) {
-            Text(text = item.name)
-            if (item.room != null) {
-                Icon(imageVector = Icons.Filled.Lock, contentDescription = null, tint = Primary)
-            } else {
-                Icon(painter = painterResource(id = R.drawable.ic_lock_open), contentDescription = null, tint = Primary)
+            IconButtonComponent(image = Icons.Filled.Edit, tint = Primary) { editClick() }
+            IconButtonComponent(image = Icons.Filled.Star, tint = Color.Yellow) { /* todo */ }
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp, top = 5.dp)
+                .offset { IntOffset(swipeState.offset.value.roundToInt(), 0) }
+                .clip(RoundedCornerShape(10.dp)),
+            colors = CardDefaults.cardColors(Color.White),
+            elevation = CardDefaults.cardElevation(10.dp)
+        ) {
+            AsyncImage(
+                model = item.snapshot,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(3.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = item.name)
+                if (item.room != null) {
+                    Icon(imageVector = Icons.Filled.Lock, contentDescription = null, tint = Primary)
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_lock_open),
+                        contentDescription = null,
+                        tint = Primary
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun IconButtonComponent(image: ImageVector, tint: Color, onClick: () -> Unit) {
+    IconButton(onClick = { onClick() }) {
+        Icon(
+            imageVector = image,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier
+                .border(1.dp, Color.LightGray, CircleShape)
+                .padding(5.dp)
+        )
     }
 }
