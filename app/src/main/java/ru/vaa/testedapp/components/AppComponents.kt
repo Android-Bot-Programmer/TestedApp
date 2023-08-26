@@ -1,20 +1,26 @@
 package ru.vaa.testedapp.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +33,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import ru.vaa.testedapp.R
 import ru.vaa.testedapp.data.TabItem
 import ru.vaa.testedapp.repository.model.Camera
 import ru.vaa.testedapp.repository.model.Door
@@ -147,11 +154,18 @@ fun DoorCardComponent(item: Door) {
                 .fillMaxWidth()
                 .padding(3.dp)
         )
-        Text(
-            text = item.name,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, top = 8.dp, bottom = 20.dp)
-        )
+                .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = item.name)
+            if (item.room != null) {
+                Icon(imageVector = Icons.Filled.Lock, contentDescription = null, tint = Primary)
+            } else {
+                Icon(painter = painterResource(id = R.drawable.ic_lock_open), contentDescription = null, tint = Primary)
+            }
+        }
     }
 }
